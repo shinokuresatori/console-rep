@@ -128,3 +128,28 @@ body::after {
 </svg>");
   pointer-events: none;
 }
+
+/* ===== ADDON MONUMENT : DENSITY ENHANCE ===== */
+
+/* 線をもう一段薄く */
+.addon-lines.dense span{
+  height:1px;
+  opacity:.35;
+}
+
+/* バーコードの別層 */
+.addon-barcode.thin i{
+  height:28px;
+  opacity:.12;
+}
+
+/* バーコードのばらつき強化 */
+.addon-barcode i:nth-child(2n){opacity:.25}
+.addon-barcode i:nth-child(4n){opacity:.45}
+.addon-barcode i:nth-child(7n){opacity:.6}
+
+/* 少しだけ詰める */
+.addon-barcode,
+.addon-lines{
+  margin-bottom:8px;
+}

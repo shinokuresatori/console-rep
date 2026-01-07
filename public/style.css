@@ -1,0 +1,21 @@
+body {
+  background: #000;
+  color: #0f0;
+  font-family: monospace;
+  margin: 0;
+  padding: 10px;
+}
+
+#console {
+  white-space: pre-wrap;
+  min-height: 90vh;
+}
+
+input {
+  width: 100%;
+  background: #000;
+  color: #0f0;
+  border: none;
+  outline: none;
+  font-family: monospace;
+}

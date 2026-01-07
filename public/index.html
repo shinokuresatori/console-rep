@@ -2,24 +2,42 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8">
-<title>FOURTH CONSOLE</title>
+<title>Console -Complicate-</title>
+
+<!-- フォント -->
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
-<body>
 
-<div id="console"></div>
-<input id="cmd" autocomplete="off" autofocus>
+<body>
+<div id="frame">
+  <div id="header">
+    <span>FOURTH CONSOLE</span>
+    <span id="phase">PHASE ?</span>
+  </div>
+
+  <div id="console"></div>
+
+  <div id="input-line">
+    <span>&gt;</span>
+    <input id="cmd" autocomplete="off" autofocus>
+  </div>
+</div>
 
 <script>
 const consoleEl = document.getElementById("console");
 const input = document.getElementById("cmd");
+const phaseEl = document.getElementById("phase");
 
-function log(text) {
+function log(text = "") {
   consoleEl.textContent += text + "\n";
-  window.scrollTo(0, document.body.scrollHeight);
+  consoleEl.scrollTop = consoleEl.scrollHeight;
 }
 
 async function send(cmd) {
+  document.body.classList.add("flash");
+  setTimeout(()=>document.body.classList.remove("flash"),60);
+
   const res = await fetch("/command", {
     method: "POST",
     headers: {"Content-Type":"application/json"},
@@ -28,25 +46,49 @@ async function send(cmd) {
   return res.json();
 }
 
+// 起動演出
+const boot = [
+  "INITIALIZING TERMINAL...",
+  "CHECKING INTEGRITY...",
+  "ESTABLISHING CONNECTION...",
+  "TERMINAL ONLINE"
+];
+
+async function bootSequence() {
+  for (const line of boot) {
+    log(line);
+    await new Promise(r => setTimeout(r, 450));
+  }
+  log("");
+  log("TYPE 'help' TO BEGIN");
+}
+bootSequence();
+
 input.addEventListener("keydown", async e => {
-  if (e.key === "Enter") {
-    const cmd = input.value.trim();
-    log("> " + cmd);
-    input.value = "";
+  if (e.key !== "Enter") return;
 
-    const data = await send(cmd);
-    log(data.output);
+  const cmd = input.value.trim();
+  if (!cmd) return;
 
-    if (data.notice) {
-      log("\n--- SYSTEM NOTICE ---");
-      log(data.notice + "\n");
-    }
+  log("> " + cmd);
+  input.value = "";
+
+  const data = await send(cmd);
+  log(data.output);
+
+  // PHASE 表示更新
+  if (cmd === "status" && data.output.includes("PHASE")) {
+    phaseEl.textContent = data.output;
+  }
+
+  // NOTICE 表示
+  if (data.notice) {
+    log("");
+    log("=== SYSTEM NOTICE ===");
+    log(data.notice);
+    log("");
   }
 });
-
-log("TERMINAL ONLINE");
-log("TYPE 'help' TO BEGIN");
 </script>
-
 </body>
 </html>

@@ -110,6 +110,7 @@ html,body{
   padding:10px 14px;
   background:rgba(0,0,0,.35);
 }
+.ib-title{font-weight:bold;letter-spacing:.2em;margin-bottom:6px}
 
 #side-mark{
   position:fixed;
@@ -149,7 +150,7 @@ html,body{
   outline:none;
 }
 
-/* ===== 追加モニュメント ===== */
+/* ===== モニュメント（高密度） ===== */
 .addon-monument{
   margin-top:18px;
   padding-top:12px;
@@ -160,35 +161,45 @@ html,body{
   display:grid;
   grid-template-columns:repeat(6,1fr);
   gap:10px;
-  margin-bottom:12px;
+  margin-bottom:8px;
 }
 .addon-lines span{
   height:2px;
   background:linear-gradient(to right,transparent,#555,transparent);
   opacity:.6;
 }
+.addon-lines.dense span{
+  height:1px;
+  opacity:.35;
+}
 
 .addon-barcode{
   display:flex;
   gap:2px;
-  margin-bottom:10px;
+  margin-bottom:8px;
 }
 .addon-barcode i{
   width:3px;
   height:36px;
-  background:#888;
+  background:#777;
   opacity:.15;
 }
-.addon-barcode i:nth-child(3n){opacity:.35}
-.addon-barcode i:nth-child(5n){opacity:.55}
+.addon-barcode.thin i{
+  height:28px;
+  opacity:.12;
+}
+.addon-barcode i:nth-child(2n){opacity:.25}
+.addon-barcode i:nth-child(4n){opacity:.45}
+.addon-barcode i:nth-child(7n){opacity:.6}
 
 .addon-label{
   font-size:10px;
   letter-spacing:.25em;
   color:#777;
+  line-height:1.6;
 }
 
-/* ===== 右テキスト（固定） ===== */
+/* ===== 右側テキスト（完全版） ===== */
 #right-text{
   position:absolute;
   top:80px;
@@ -202,7 +213,15 @@ html,body{
 #right-text p{margin:0 0 14px}
 .keyword{color:#ccc}
 
-/* ===== 回答 ===== */
+/* ===== 回答UI ===== */
+#confirmed-panel{
+  position:fixed;
+  bottom:24px;
+  left:240px;
+  font-size:11px;
+  color:#777;
+  opacity:0;
+}
 #post-x{
   display:none;
   margin-top:12px;
@@ -212,6 +231,12 @@ html,body{
   border:1px solid #333;
   padding:6px 10px;
 }
+#post-x:hover{background:#111}
+
+.fade-in{animation:fadeIn .8s ease forwards}
+.glitch{animation:glitch .25s steps(2) 3}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes glitch{0%{opacity:1}50%{opacity:.2}100%{opacity:1}}
 </style>
 </head>
 
@@ -228,24 +253,44 @@ html,body{
 <div id="barcode-right" class="fake-barcode"></div>
 <div id="center-fragments"></div>
 
+<div id="info-block">
+  <div class="ib-title">GSRK</div>
+  <div>PHASE : <span id="phase">0</span></div>
+  <div>STATUS : OBSERVING</div>
+  <div>NODE : ACTIVE</div>
+</div>
+
+<div id="side-mark"><span>D</span><span>4</span><span>K</span><span>K</span></div>
+
 <div id="frame">
   <div id="console">
     <div id="log">INPUT COMMAND.</div>
-    <input id="input">
+    <input id="input" autocomplete="off">
 
-    <!-- 追加されたモニュメント -->
     <div class="addon-monument">
       <div class="addon-lines">
         <span></span><span></span><span></span>
         <span></span><span></span><span></span>
       </div>
+      <div class="addon-lines dense">
+        <span></span><span></span><span></span>
+        <span></span><span></span><span></span>
+      </div>
+
       <div class="addon-barcode">
         <i></i><i></i><i></i><i></i><i></i>
-        <i></i><i></i><i></i><i></i>
+        <i></i><i></i><i></i><i></i><i></i>
+        <i></i><i></i><i></i><i></i><i></i>
       </div>
+      <div class="addon-barcode thin">
+        <i></i><i></i><i></i><i></i><i></i>
+        <i></i><i></i><i></i><i></i><i></i>
+      </div>
+
       <div class="addon-label">
         MONUMENT NODE : B-04<br>
-        SIGNAL STATUS : OBSERVING
+        SIGNAL STATUS : OBSERVING<br>
+        DIMENSION LINK : ACTIVE
       </div>
     </div>
 
@@ -257,9 +302,80 @@ html,body{
     <p>All beings, perceptions, and concepts that exist in this world converge here.</p>
     <p>Dimensions extend like branching paths.</p>
     <p>Those dimensions ultimately arrive at this boundary.</p>
+    <p>Dimensions unfold as four-dimensional space, the three-dimensional plane in which we reside,<br>
+       the two-dimensional plane that exists upon a surface,<br>
+       and the one-dimensional line defined only by length.</p>
+    <p>What we are primarily able to observe and create are these three alone.</p>
+    <p>However, beyond them exist numerous dimensions that we are unable to perceive.</p>
+    <p>The place where all of those dimensions gather is here.</p>
+    <p>Countless stories exist, branching endlessly like limbs of a tree.</p>
     <p>We call this phenomenon "<span class="keyword">Gensourei</span>".</p>
   </div>
 </div>
+
+<div id="confirmed-panel"></div>
+
+<script>
+setTimeout(()=>{document.getElementById("boot-screen")?.remove()},8000);
+
+const input=document.getElementById("input");
+const log=document.getElementById("log");
+const phaseEl=document.getElementById("phase");
+const confirmedPanel=document.getElementById("confirmed-panel");
+const postX=document.getElementById("post-x");
+
+const answers=["MISSION_I_COMPLETE"];
+const confirmed=new Set();
+
+input.addEventListener("keydown",e=>{
+  if(e.key!=="Enter")return;
+  const cmd=input.value.trim();
+  input.value="";
+
+  if(answers.includes(cmd)&&!confirmed.has(cmd)){
+    confirmed.add(cmd);
+    const p=confirmed.size;
+
+    log.textContent="VERIFYING INPUT...";
+    log.className="glitch";
+
+    setTimeout(()=>{
+      log.className="";
+      log.textContent="ANSWER CONFIRMED.";
+      log.classList.add("fade-in");
+
+      phaseEl.textContent=p;
+      confirmedPanel.textContent=`CONFIRMED NODE ${p}`;
+      confirmedPanel.classList.add("fade-in");
+      confirmedPanel.style.opacity=1;
+
+      const d=new Date();
+      const today=
+        d.getFullYear()+"/"+
+        String(d.getMonth()+1).padStart(2,"0")+"/"+
+        String(d.getDate()).padStart(2,"0");
+
+      const postText=
+`◤◢◤調査完了◢◤◢
+
+あなたはログデータ「mission I」の問題を解決し、
+虚構の存在、"葎"を元ある場所へ返す一つの過程を完了しました。
+
+また、「▓▓▓▓▓▓」データ解明の手掛かりを一部を完了させました。
+
+虚構から現実への戻化の記録：${today}
+
+#バベ尖 #バベルの尖塔 #ARG #リアルタイム`;
+
+      postX.href="https://x.com/intent/post?text="+encodeURIComponent(postText);
+      postX.style.display="block";
+      postX.classList.add("fade-in");
+    },1200);
+  }else{
+    log.textContent="NO RESPONSE.";
+  }
+});
+</script>
 
 </body>
 </html>

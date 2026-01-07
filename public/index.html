@@ -9,7 +9,7 @@
 :root {
   --bg:#000;
   --fg:#e6e6e6;
-  --dim:#888;
+  --dim:#777;
 }
 
 * { box-sizing:border-box; }
@@ -23,24 +23,43 @@ body {
   overflow:hidden;
 }
 
-/* ===== モニュメント ===== */
-#monument {
+/* ===== モニュメント共通 ===== */
+.monument {
   position:fixed;
   inset:0;
+  pointer-events:none;
+  z-index:0;
+  opacity:0.06;
   display:flex;
   align-items:center;
   justify-content:center;
-  pointer-events:none;
-  z-index:0;
-  opacity:0.08;
 }
-#monument svg {
-  height:70vh;
+
+.monument svg {
   fill:none;
   stroke:#fff;
   stroke-width:1;
-  filter:drop-shadow(0 0 10px rgba(255,255,255,0.1));
+  filter:drop-shadow(0 0 12px rgba(255,255,255,0.1));
 }
+
+/* 中央塔 */
+#monument-core svg { height:70vh; }
+
+/* 左補助構造 */
+#monument-left {
+  justify-content:flex-start;
+  padding-left:5vw;
+  opacity:0.04;
+}
+#monument-left svg { height:50vh; }
+
+/* 右補助構造 */
+#monument-right {
+  justify-content:flex-end;
+  padding-right:5vw;
+  opacity:0.04;
+}
+#monument-right svg { height:50vh; }
 
 /* ===== UI ===== */
 #frame {
@@ -85,23 +104,47 @@ body {
   inset:0;
   background:rgba(0,0,0,0.85);
   display:flex;
+  flex-direction:column;
   align-items:center;
   justify-content:center;
-  font-size:22px;
-  letter-spacing:0.2em;
+  gap:24px;
   opacity:0;
   pointer-events:none;
   transition:opacity .4s;
   z-index:5;
 }
-#overlay.active { opacity:1; }
+
+#overlay.active {
+  opacity:1;
+  pointer-events:auto;
+}
+
+#overlay .message {
+  font-size:22px;
+  letter-spacing:0.25em;
+}
+
+/* ===== Xポストボタン ===== */
+#postX {
+  color:#fff;
+  border:1px solid #555;
+  padding:10px 18px;
+  font-size:13px;
+  text-decoration:none;
+  opacity:0.8;
+}
+
+#postX:hover {
+  opacity:1;
+  border-color:#aaa;
+}
 </style>
 </head>
 
 <body>
 
-<!-- モニュメント -->
-<div id="monument">
+<!-- 中央モニュメント -->
+<div id="monument-core" class="monument">
   <svg viewBox="0 0 300 600">
     <rect x="120" y="80" width="60" height="360"/>
     <line x1="120" y1="160" x2="180" y2="160"/>
@@ -109,6 +152,26 @@ body {
     <line x1="120" y1="320" x2="180" y2="320"/>
     <rect x="138" y="140" width="24" height="220"/>
     <rect x="90" y="440" width="120" height="30"/>
+  </svg>
+</div>
+
+<!-- 左モニュメント -->
+<div id="monument-left" class="monument">
+  <svg viewBox="0 0 200 500">
+    <rect x="80" y="60" width="40" height="300"/>
+    <line x1="80" y1="140" x2="120" y2="140"/>
+    <line x1="80" y1="220" x2="120" y2="220"/>
+    <rect x="60" y="360" width="80" height="20"/>
+  </svg>
+</div>
+
+<!-- 右モニュメント -->
+<div id="monument-right" class="monument">
+  <svg viewBox="0 0 200 500">
+    <rect x="80" y="100" width="40" height="260"/>
+    <line x1="80" y1="180" x2="120" y2="180"/>
+    <rect x="90" y="60" width="20" height="40"/>
+    <rect x="60" y="360" width="80" height="20"/>
   </svg>
 </div>
 
@@ -121,21 +184,25 @@ body {
   </div>
 </div>
 
-<div id="overlay">ANSWER CONFIRMED</div>
+<!-- オーバーレイ -->
+<div id="overlay">
+  <div class="message">ANSWER CONFIRMED</div>
+  <a id="postX" target="_blank">POST TO X</a>
+</div>
 
 <script>
 const output  = document.getElementById("output");
 const input   = document.getElementById("input");
 const overlay = document.getElementById("overlay");
+const postX   = document.getElementById("postX");
 
-/* ===== 回答リスト（完全一致） ===== */
+/* ===== 回答（完全一致） ===== */
 const ANSWERS = [
   "ANSWER-0413",
   "ECHO IS NOT DEAD",
   "PHASE0_CLEAR"
 ];
 
-/* ===== 一度通った回答を記録 ===== */
 const confirmed = new Set();
 
 /* ===== 表示 ===== */
@@ -154,10 +221,9 @@ input.addEventListener("keydown", e => {
 
   const cmd = input.value;
   input.value = "";
-
   log("❯ " + cmd);
 
-  /* ===== 完全一致チェック ===== */
+  /* ===== 完全一致 ===== */
   if (ANSWERS.includes(cmd)) {
 
     if (confirmed.has(cmd)) {
@@ -167,7 +233,14 @@ input.addEventListener("keydown", e => {
 
     confirmed.add(cmd);
 
+    // X用投稿文（固定 or cmdを含める）
+    const text = encodeURIComponent(
+      "ANSWER CONFIRMED\nPHASE: " + confirmed.size
+    );
+    postX.href = `https://x.com/intent/post?text=${text}`;
+
     overlay.classList.add("active");
+
     log("");
     log("=== SYSTEM ===");
     log("回答を確認しました");
@@ -175,7 +248,7 @@ input.addEventListener("keydown", e => {
 
     setTimeout(() => {
       overlay.classList.remove("active");
-    }, 1500);
+    }, 5000);
 
     return;
   }

@@ -2,24 +2,27 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8">
-<title>Console -Complicate-</title>
+<title>FOURTH CONSOLE</title>
 
-<!-- フォント -->
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
+<div id="overlay">
+  <div id="overlay-text">SYSTEM ACTIVE</div>
+</div>
+
 <div id="frame">
   <div id="header">
-    <span>console</span>
+    <span>FOURTH CONSOLE</span>
     <span id="phase">PHASE ?</span>
   </div>
 
   <div id="console"></div>
 
   <div id="input-line">
-    <span>&gt;</span>
+    <span class="prompt">❯</span>
     <input id="cmd" autocomplete="off" autofocus>
   </div>
 </div>
@@ -28,15 +31,16 @@
 const consoleEl = document.getElementById("console");
 const input = document.getElementById("cmd");
 const phaseEl = document.getElementById("phase");
+const overlay = document.getElementById("overlay-text");
 
-function log(text = "") {
+function log(text="") {
   consoleEl.textContent += text + "\n";
   consoleEl.scrollTop = consoleEl.scrollHeight;
 }
 
 async function send(cmd) {
   document.body.classList.add("flash");
-  setTimeout(()=>document.body.classList.remove("flash"),60);
+  setTimeout(()=>document.body.classList.remove("flash"),80);
 
   const res = await fetch("/command", {
     method: "POST",
@@ -46,21 +50,21 @@ async function send(cmd) {
   return res.json();
 }
 
-// 起動演出
+/* 起動 */
 const boot = [
-  "INITIALIZING TERMINAL...",
-  "CHECKING INTEGRITY...",
-  "ESTABLISHING CONNECTION...",
-  "TERMINAL ONLINE"
+  "BOOT SEQUENCE INITIATED",
+  "LOADING CORE MODULES",
+  "LINKING OBSERVATION NODE",
+  "TERMINAL CONNECTED"
 ];
 
 async function bootSequence() {
   for (const line of boot) {
     log(line);
-    await new Promise(r => setTimeout(r, 450));
+    await new Promise(r => setTimeout(r, 500));
   }
   log("");
-  log("TYPE 'help' TO BEGIN");
+  log("INPUT COMMAND");
 }
 bootSequence();
 
@@ -70,21 +74,30 @@ input.addEventListener("keydown", async e => {
   const cmd = input.value.trim();
   if (!cmd) return;
 
-  log("> " + cmd);
+  log("❯ " + cmd);
   input.value = "";
 
+  overlay.textContent = "PROCESSING...";
+  overlay.classList.add("active");
+
+  await new Promise(r => setTimeout(r, 300));
+
   const data = await send(cmd);
+  overlay.classList.remove("active");
+
   log(data.output);
 
-  // PHASE 表示更新
   if (cmd === "status" && data.output.includes("PHASE")) {
     phaseEl.textContent = data.output;
   }
 
-  // NOTICE 表示
   if (data.notice) {
+    overlay.textContent = "SYSTEM NOTICE";
+    overlay.classList.add("alert");
+    setTimeout(()=>overlay.classList.remove("alert"),1200);
+
     log("");
-    log("=== SYSTEM NOTICE ===");
+    log("=== NOTICE ===");
     log(data.notice);
     log("");
   }

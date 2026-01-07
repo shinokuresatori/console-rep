@@ -2,106 +2,207 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8">
-<title>FOURTH CONSOLE</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SYSTEM CONSOLE</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
+<style>
+:root {
+  --bg:#000;
+  --fg:#e6e6e6;
+  --dim:#888;
+}
+
+* { box-sizing:border-box; }
+
+body {
+  margin:0;
+  background:var(--bg);
+  color:var(--fg);
+  font-family:Consolas, "Courier New", monospace;
+  height:100vh;
+  overflow:hidden;
+}
+
+/* ===== モニュメント ===== */
+#monument {
+  position:fixed;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  pointer-events:none;
+  z-index:0;
+  opacity:0.08;
+}
+#monument svg {
+  height:70vh;
+  fill:none;
+  stroke:#fff;
+  stroke-width:1;
+  filter:drop-shadow(0 0 10px rgba(255,255,255,0.1));
+}
+
+/* ===== UI ===== */
+#frame {
+  position:relative;
+  z-index:2;
+  width:100%;
+  height:100%;
+  padding:24px;
+  display:flex;
+  flex-direction:column;
+}
+
+#output {
+  flex:1;
+  overflow-y:auto;
+  white-space:pre-wrap;
+  font-size:14px;
+  line-height:1.6;
+}
+
+#input-line {
+  display:flex;
+  gap:8px;
+  margin-top:12px;
+}
+
+#prompt { color:var(--dim); }
+
+#input {
+  flex:1;
+  background:transparent;
+  border:none;
+  outline:none;
+  color:var(--fg);
+  font-family:inherit;
+  font-size:14px;
+}
+
+/* ===== オーバーレイ ===== */
+#overlay {
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.85);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:22px;
+  letter-spacing:0.2em;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .4s;
+  z-index:5;
+}
+#overlay.active { opacity:1; }
+</style>
 </head>
 
 <body>
-<div id="overlay">
-  <div id="overlay-text">SYSTEM ACTIVE</div>
+
+<!-- モニュメント -->
+<div id="monument">
+  <svg viewBox="0 0 300 600">
+    <rect x="120" y="80" width="60" height="360"/>
+    <line x1="120" y1="160" x2="180" y2="160"/>
+    <line x1="120" y1="240" x2="180" y2="240"/>
+    <line x1="120" y1="320" x2="180" y2="320"/>
+    <rect x="138" y="140" width="24" height="220"/>
+    <rect x="90" y="440" width="120" height="30"/>
+  </svg>
 </div>
 
+<!-- コンソール -->
 <div id="frame">
-  <div id="header">
-    <span>FOURTH CONSOLE</span>
-    <span id="phase">PHASE ?</span>
-  </div>
-
-  <div id="console"></div>
-
+  <div id="output"></div>
   <div id="input-line">
-    <span class="prompt">❯</span>
-    <input id="cmd" autocomplete="off" autofocus>
+    <span id="prompt">❯</span>
+    <input id="input" autocomplete="off" autofocus>
   </div>
 </div>
+
+<div id="overlay">ANSWER CONFIRMED</div>
 
 <script>
-const consoleEl = document.getElementById("console");
-const input = document.getElementById("cmd");
-const phaseEl = document.getElementById("phase");
-const overlay = document.getElementById("overlay-text");
+const output  = document.getElementById("output");
+const input   = document.getElementById("input");
+const overlay = document.getElementById("overlay");
 
-function log(text="") {
-  consoleEl.textContent += text + "\n";
-  consoleEl.scrollTop = consoleEl.scrollHeight;
-}
-
-async function send(cmd) {
-  document.body.classList.add("flash");
-  setTimeout(()=>document.body.classList.remove("flash"),80);
-
-  const res = await fetch("/command", {
-    method: "POST",
-    headers: {"Content-Type":"application/json"},
-    body: JSON.stringify({ cmd })
-  });
-  return res.json();
-}
-
-/* 起動 */
-const boot = [
-  "BOOT SEQUENCE INITIATED",
-  "LOADING CORE MODULES",
-  "LINKING OBSERVATION NODE",
-  "TERMINAL CONNECTED"
+/* ===== 回答リスト（完全一致） ===== */
+const ANSWERS = [
+  "ANSWER-0413",
+  "ECHO IS NOT DEAD",
+  "PHASE0_CLEAR"
 ];
 
-async function bootSequence() {
-  for (const line of boot) {
-    log(line);
-    await new Promise(r => setTimeout(r, 500));
-  }
-  log("");
-  log("INPUT COMMAND");
-}
-bootSequence();
+/* ===== 一度通った回答を記録 ===== */
+const confirmed = new Set();
 
-input.addEventListener("keydown", async e => {
+/* ===== 表示 ===== */
+function log(t="") {
+  output.textContent += t + "\n";
+  output.scrollTop = output.scrollHeight;
+}
+
+/* ===== 初期 ===== */
+log("SYSTEM ONLINE");
+log("TYPE 'help' FOR AVAILABLE COMMANDS");
+log("");
+
+input.addEventListener("keydown", e => {
   if (e.key !== "Enter") return;
 
-  const cmd = input.value.trim();
-  if (!cmd) return;
-
-  log("❯ " + cmd);
+  const cmd = input.value;
   input.value = "";
 
-  overlay.textContent = "PROCESSING...";
-  overlay.classList.add("active");
+  log("❯ " + cmd);
 
-  await new Promise(r => setTimeout(r, 300));
+  /* ===== 完全一致チェック ===== */
+  if (ANSWERS.includes(cmd)) {
 
-  const data = await send(cmd);
-  overlay.classList.remove("active");
+    if (confirmed.has(cmd)) {
+      log("ALREADY CONFIRMED");
+      return;
+    }
 
-  log(data.output);
+    confirmed.add(cmd);
 
-  if (cmd === "status" && data.output.includes("PHASE")) {
-    phaseEl.textContent = data.output;
+    overlay.classList.add("active");
+    log("");
+    log("=== SYSTEM ===");
+    log("回答を確認しました");
+    log("");
+
+    setTimeout(() => {
+      overlay.classList.remove("active");
+    }, 1500);
+
+    return;
   }
 
-  if (data.notice) {
-    overlay.textContent = "SYSTEM NOTICE";
-    overlay.classList.add("alert");
-    setTimeout(()=>overlay.classList.remove("alert"),1200);
+  /* ===== 通常コマンド ===== */
+  switch(cmd) {
+    case "help":
+      log("available commands:");
+      log("- help");
+      log("- status");
+      log("- observe");
+      break;
 
-    log("");
-    log("=== NOTICE ===");
-    log(data.notice);
-    log("");
+    case "status":
+      log("PHASE: " + confirmed.size);
+      log("STATE: STABLE");
+      break;
+
+    case "observe":
+      log("NO ANOMALY DETECTED");
+      break;
+
+    default:
+      log("UNKNOWN COMMAND");
   }
 });
 </script>
+
 </body>
 </html>

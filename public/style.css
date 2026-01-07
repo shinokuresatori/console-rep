@@ -128,3 +128,77 @@ body::after {
 </svg>");
   pointer-events: none;
 }
+
+/* ===== ADDON MONUMENT (UI非破壊追加) ===== */
+
+.addon-monument {
+  margin-top: 24px;
+  padding-top: 16px;
+  border-top: 1px dashed rgba(255,255,255,0.25);
+  position: relative;
+}
+
+/* 装飾線 */
+.addon-lines {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.addon-lines span {
+  height: 2px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(255,255,255,0.4),
+    transparent
+  );
+  opacity: 0.7;
+}
+
+/* 偽バーコード */
+.addon-barcode {
+  display: flex;
+  gap: 2px;
+  margin-bottom: 14px;
+}
+
+.addon-barcode i {
+  width: 3px;
+  height: 38px;
+  background: #fff;
+  opacity: 0.15;
+}
+
+.addon-barcode i:nth-child(3n) { opacity: 0.4; }
+.addon-barcode i:nth-child(4n) { opacity: 0.25; }
+.addon-barcode i:nth-child(5n) { opacity: 0.6; }
+
+/* ラベル */
+.addon-label {
+  font-size: 10px;
+  letter-spacing: 0.25em;
+  opacity: 0.6;
+  line-height: 1.6;
+}
+
+/* 走査線（上に重ねるだけ） */
+.addon-monument::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(255,255,255,0.06) 50%,
+    transparent 100%
+  );
+  animation: addon-scan 5s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes addon-scan {
+  from { background-position-y: 0; }
+  to   { background-position-y: 100%; }
+}

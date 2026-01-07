@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>FOURTH CONSOLE</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="console"></div>
+<input id="cmd" autocomplete="off" autofocus>
+
+<script>
+const consoleEl = document.getElementById("console");
+const input = document.getElementById("cmd");
+
+function log(text) {
+  consoleEl.textContent += text + "\n";
+  window.scrollTo(0, document.body.scrollHeight);
+}
+
+async function send(cmd) {
+  const res = await fetch("/command", {
+    method: "POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({ cmd })
+  });
+  return res.json();
+}
+
+input.addEventListener("keydown", async e => {
+  if (e.key === "Enter") {
+    const cmd = input.value.trim();
+    log("> " + cmd);
+    input.value = "";
+
+    const data = await send(cmd);
+    log(data.output);
+
+    if (data.notice) {
+      log("\n--- SYSTEM NOTICE ---");
+      log(data.notice + "\n");
+    }
+  }
+});
+
+log("TERMINAL ONLINE");
+log("TYPE 'help' TO BEGIN");
+</script>
+
+</body>
+</html>

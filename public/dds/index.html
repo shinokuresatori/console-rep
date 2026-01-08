@@ -333,7 +333,23 @@ fetch("/dds/api/data")
       cal.appendChild(div);
     });
   });
+  
+function loadDDS(){
+  fetch("/dds/api/data")
+    .then(r=>r.json())
+    .then(data=>{
+      const cal = document.getElementById("calendar");
+      cal.innerHTML="";
+      Object.keys(data).forEach(d=>{
+        const div = document.createElement("div");
+        div.textContent = d + " " + data[d];
+        cal.appendChild(div);
+      });
+    });
+}
 
+loadDDS();
+setInterval(loadDDS, 3000); // admin保存後すぐ反映
 </script>
 
 </body>

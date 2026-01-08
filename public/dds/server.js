@@ -6,8 +6,8 @@ const app = express();
 const PORT = process.env.PORT || 10000;
 const ADMIN_KEY = process.env.ADMIN_KEY;
 
-const DATA_FILE = "data.json";          // 日付ログ
-const STATE_FILE = "dds-state.json";    // ARG状態【追加】
+const DATA_FILE  = "data.json";       // 日付ログ
+const STATE_FILE = "dds-state.json";  // ARG状態
 
 app.use(express.json());
 app.use(express.static("public"));
@@ -19,9 +19,7 @@ app.get("/dds", (req, res) => {
 
 /* ===== 調査の手引き ===== */
 app.get("/dds/instruction", (req, res) => {
-  res.sendFile(
-    path.join(__dirname, "public", "dds", "bVgr6sSX8uJpcMJ.html")
-  );
+  res.sendFile(path.join(__dirname, "public", "dds", "bVgr6sSX8uJpcMJ.html"));
 });
 
 /* ===== admin ログイン ===== */
@@ -33,7 +31,7 @@ app.post("/dds/api/admin-login", (req, res) => {
   res.json({ ok: key === ADMIN_KEY });
 });
 
-/* ===== データ保存（■＋伏字対応） ===== */
+/* ===== 日付データ保存（■付与はサーバー側） ===== */
 app.post("/dds/api/save", (req, res) => {
   const { date, detail } = req.body;
   if (!date || !detail) {
@@ -45,26 +43,25 @@ app.post("/dds/api/save", (req, res) => {
     data = JSON.parse(fs.readFileSync(DATA_FILE, "utf8"));
   }
 
-  // 【追加】必ず ■ を付与（中身は伏字前提）
   data[date] = "■" + detail;
 
   fs.writeFileSync(DATA_FILE, JSON.stringify(data, null, 2));
   res.json({ ok: true });
 });
 
-/* ===== データ取得 ===== */
+/* ===== 日付データ取得 ===== */
 app.get("/dds/api/data", (req, res) => {
   if (!fs.existsSync(DATA_FILE)) return res.json({});
   res.json(JSON.parse(fs.readFileSync(DATA_FILE, "utf8")));
 });
 
-/* ===== ARG 状態取得【追加】 ===== */
+/* ===== ARG 状態取得 ===== */
 app.get("/dds/api/state", (req, res) => {
   if (!fs.existsSync(STATE_FILE)) return res.json({});
   res.json(JSON.parse(fs.readFileSync(STATE_FILE, "utf8")));
 });
 
-/* ===== ARG 状態更新【追加】 ===== */
+/* ===== ARG 状態更新 ===== */
 app.post("/dds/api/state", (req, res) => {
   const { id, state } = req.body;
   if (!id || !state) {
@@ -76,12 +73,12 @@ app.post("/dds/api/state", (req, res) => {
     s = JSON.parse(fs.readFileSync(STATE_FILE, "utf8"));
   }
 
-  s[id] = state; // investigating / completed
+  s[id] = state;
   fs.writeFileSync(STATE_FILE, JSON.stringify(s, null, 2));
   res.json({ ok: true });
 });
 
-// このあたりに入れる（API定義の下が良い）
+/* ===== admin HTML 明示 ===== */
 app.get("/dds/admin-lock.html", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "dds", "admin-lock.html"));
 });
@@ -90,7 +87,7 @@ app.get("/dds/admin-panel.html", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "dds", "admin-panel.html"));
 });
 
-/* ===== 直打ち対策（DDS配下） ===== */
+/* ===== 直打ち対策（最後！） ===== */
 app.get("/dds/*", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "dds", "index.html"));
 });

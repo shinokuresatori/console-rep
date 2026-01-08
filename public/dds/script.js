@@ -3,11 +3,10 @@
 
   // ルート定義
   const routes = {
-    "/dds": "/dds/views/home.html",
-    "/dds/": "/dds/views/home.html",
-    "/dds/admin": "/dds/views/admin.html",
-    "/dds/admin-lock": "/dds/views/admin-lock.html",
-    "/dds/guide": "/dds/views/guide.html"
+    "/dds": "/dds/index.html",
+    "/dds/admin": "/dds/admin-panel.html",
+    "/dds/admin-lock": "/dds/admin-lock.html",
+    "/dds/guide": "/dds/bVgr6sSX8uJpcMJ.html"
   };
 
   // HTML読み込み

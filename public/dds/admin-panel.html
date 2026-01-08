@@ -37,15 +37,29 @@ if(!localStorage.getItem("bps_admin")){
   document.body.innerHTML="FORBIDDEN";
 }
 
+// 既存DDSデータ取得
+let ddsData = {};
+
+fetch("/dds/api/data")
+  .then(r=>r.json())
+  .then(j => ddsData = j);
+
 function save(){
-  fetch("/api/save",{
+  const date = document.getElementById("date").value;
+  const detail = document.getElementById("detail").value;
+
+  if(!date){
+    document.getElementById("msg").textContent="DATE REQUIRED";
+    return;
+  }
+
+  // ■ を必ず付ける
+  ddsData[date] = "■ " + detail;
+
+  fetch("/dds/api/save",{
     method:"POST",
     headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({
-      key:document.getElementById("key").value,
-      date:document.getElementById("date").value,
-      detail:document.getElementById("detail").value
-    })
+    body:JSON.stringify(ddsData)
   })
   .then(r=>r.json())
   .then(d=>{

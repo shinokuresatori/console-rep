@@ -69,8 +69,17 @@ app.post("/dds/api/state", (req, res) => {
 });
 
 // ===== ADMIN HTML =====
-app.get("/dds/admin-lock.html", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "dds", "admin-lock.html"));
+app.post("/dds/api/admin-login", (req, res) => {
+  const { key } = req.body;
+
+  // 安全に環境変数を確認
+  if (!process.env.ADMIN_KEY || process.env.ADMIN_KEY.trim() === "") {
+    console.error("ADMIN_KEY is not set!");
+    return res.status(500).json({ error: "ADMIN_KEY not set" });
+  }
+
+  const adminKey = process.env.ADMIN_KEY.trim();
+  res.json({ ok: key === adminKey });
 });
 app.get("/dds/admin-panel.html", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "dds", "admin-panel.html"));

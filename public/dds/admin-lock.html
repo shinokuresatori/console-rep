@@ -3,7 +3,6 @@
 <head>
 <meta charset="utf-8">
 <title>BPS ADMIN LOCK</title>
-
 <style>
 body{
   background:#000;
@@ -15,83 +14,54 @@ body{
   height:100vh;
   margin:0;
 }
-.container{
-  width:260px;
-}
 input,button{
-  width:100%;
   background:#000;
   border:1px solid #444;
   color:#ccc;
   padding:6px;
+  width:100%;
   box-sizing:border-box;
 }
-button{
-  cursor:pointer;
-}
-#msg{
-  margin-top:6px;
-  min-height:1em;
-  color:#888;
-}
+button{cursor:pointer;}
+#msg{margin-top:6px;color:#888;min-height:1em;}
+.container{width:260px;}
 </style>
 </head>
-
 <body>
-
 <div class="container">
   <h3>ADMIN ACCESS</h3>
-
-  <input
-    id="key"
-    placeholder="ADMIN KEY"
-    autocomplete="off"
-    onkeydown="if(event.key==='Enter') login()"
-  >
-
+  <input id="key" placeholder="ADMIN KEY" autocomplete="off" onkeydown="if(event.key==='Enter') login()">
   <button type="button" onclick="login()">ENTER</button>
   <div id="msg"></div>
 </div>
-
 <script>
-/* すでに管理者ならスキップ */
 if(localStorage.getItem("bps_admin")==="1"){
   location.href="/dds/admin-panel.html";
 }
 
-/* LOGIN */
 function login(){
   const key = document.getElementById("key").value.trim();
   const msg = document.getElementById("msg");
-  msg.textContent = "";
+  msg.textContent="";
 
-  if(!key){
-    msg.textContent="KEY REQUIRED";
-    return;
-  }
+  if(!key){ msg.textContent="KEY REQUIRED"; return; }
 
-  fetch("/dds/api/admin-login",{
+  fetch("/dds/api/admin-login", {
     method:"POST",
     headers:{ "Content-Type":"application/json" },
-    body:JSON.stringify({ key })
+    body: JSON.stringify({ key })
   })
-  .then(r=>{
-    if(!r.ok) throw new Error();
-    return r.json();
-  })
-  .then(d=>{
-    if(d.ok){
+  .then(res => res.json())
+  .then(data => {
+    if(data.ok){
       localStorage.setItem("bps_admin","1");
       location.href="/dds/admin-panel.html";
-    }else{
+    } else {
       msg.textContent="ACCESS DENIED";
     }
   })
-  .catch(()=>{
-    msg.textContent="SERVER ERROR";
-  });
+  .catch(()=> msg.textContent="SERVER ERROR");
 }
 </script>
-
 </body>
 </html>

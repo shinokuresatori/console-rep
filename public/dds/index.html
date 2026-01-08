@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>BPS | Boundary Processing System</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --bg:#0a0a0a;
+  --panel:#101010;
+  --line:#2a2a2a;
+  --text:#cfcfcf;
+  --sub:#7a7a7a;
+  --alert:#a33;
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:Consolas,monospace;
+  font-size:13px;
+  letter-spacing:.08em;
+}
+
+.wrapper{display:flex;min-height:100vh}
+
+/* ===== SIDEBAR ===== */
+.sidebar{
+  width:240px;
+  border-right:1px solid var(--line);
+  background:#080808;
+  padding:16px 14px;
+}
+.sidebar h1{
+  font-size:11px;
+  font-weight:normal;
+  color:var(--sub);
+  margin:0 0 16px;
+}
+.tool-group{margin-bottom:24px}
+.tool-group h2{
+  font-size:10px;
+  font-weight:normal;
+  color:#666;
+  margin:0 0 8px;
+}
+.tool-btn{
+  display:block;
+  width:100%;
+  padding:8px 10px;
+  margin-bottom:6px;
+  background:#000;
+  border:1px solid var(--line);
+  color:var(--text);
+  font-size:11px;
+  text-align:left;
+  cursor:pointer;
+}
+.tool-btn:hover{background:#111}
+.tool-btn.alert{
+  border-color:var(--alert);
+  color:#ffb3b3;
+}
+
+/* ===== MAIN ===== */
+.main{flex:1}
+header{
+  border-bottom:1px solid var(--line);
+  padding:10px 24px;
+  display:flex;
+  justify-content:space-between;
+  font-size:11px;
+  color:var(--sub);
+}
+main{
+  max-width:1200px;
+  margin:24px auto;
+  padding:0 24px;
+}
+.panel{
+  position:relative;
+  background:var(--panel);
+  border:1px solid var(--line);
+  padding:18px;
+}
+.panel::before,.panel::after{
+  content:"";
+  position:absolute;
+  width:10px;height:10px;
+}
+.panel::before{
+  top:-1px;left:-1px;
+  border-top:1px solid var(--text);
+  border-left:1px solid var(--text);
+}
+.panel::after{
+  bottom:-1px;right:-1px;
+  border-bottom:1px solid var(--text);
+  border-right:1px solid var(--text);
+}
+h2{
+  font-size:11px;
+  font-weight:normal;
+  color:var(--sub);
+  margin:0 0 12px;
+}
+
+/* ===== VIEWER ===== */
+.viewer{
+  font-family:'Noto Serif JP',serif;
+  letter-spacing:.25em;
+  color:#e0e0e0;
+}
+.viewer h3{
+  font-weight:normal;
+  margin-top:30px;
+}
+.viewer h3::before{
+  content:"┏━━━━━━━━━━━━━━━━━━━━━━┓";
+  display:block;
+  color:#555;
+  margin-bottom:6px;
+}
+.viewer h3::after{
+  content:"┗━━━━━━━━━━━━━━━━━━━━━━┛";
+  display:block;
+  color:#555;
+  margin-top:6px;
+}
+
+.arg-list{display:flex;gap:20px;flex-wrap:wrap}
+.arg-card{
+  background:#050505;
+  border:1px solid #555;
+  width:180px;
+  padding:10px;
+  text-align:center;
+  position:relative;
+}
+.arg-card img{width:100%;margin-bottom:6px}
+.arg-status{
+  position:absolute;
+  top:6px;right:6px;
+  background:#6fa8ff;
+  color:#000;
+  font-size:.7em;
+  padding:2px 4px;
+}
+.arg-title{font-weight:bold;margin-bottom:6px}
+.arg-link button{
+  background:#000;
+  color:#ccc;
+  border:1px solid #444;
+  padding:4px 8px;
+  cursor:pointer;
+}
+.arg-link button:hover{background:#111}
+
+/* ===== CALENDAR ===== */
+.calendar{
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  gap:2px;
+  border:1px solid #333;
+  padding:4px;
+  background:#020202;
+}
+.weekday{text-align:center;font-size:.8em;color:#666}
+.day{
+  border:1px solid #222;
+  padding:8px;
+  min-height:50px;
+  position:relative;
+  cursor:pointer;
+}
+.day.has::after{
+  content:"■";
+  position:absolute;
+  bottom:4px;
+  right:6px;
+  font-size:10px;
+  color:#888;
+}
+.day.future{color:#444}
+.day.today{outline:1px solid #fff}
+.day.selected{outline:2px solid #6fa8ff}
+
+#detail{
+  margin-top:20px;
+  border:1px solid #444;
+  padding:15px;
+  background:#050505;
+  white-space:pre-wrap;
+}
+#detail.future{
+  animation: blinkMask 1s infinite;
+}
+@keyframes blinkMask{
+  0%,50%,100%{color:#444;transform:translateX(0)}
+  25%{color:#888;transform:translateX(1px)}
+  75%{color:#bbb;transform:translateX(-1px)}
+}
+</style>
+</head>
+
+<body>
+<div class="wrapper">
+
+<aside class="sidebar">
+  <h1>BPS CORE</h1>
+  <div class="tool-group">
+    <h2>ACCOUNT</h2>
+    <button class="tool-btn">LOGIN</button>
+    <button class="tool-btn">ACCOUNT STATUS</button>
+    <button class="tool-btn">CLEAR SESSION</button>
+  </div>
+  <div class="tool-group">
+    <h2>TOOLS</h2>
+    <button class="tool-btn">CASE INDEX</button>
+    <button class="tool-btn">SIGNAL MONITOR</button>
+    <button class="tool-btn">ARCHIVE VIEWER</button>
+    <button class="tool-btn">TRACE ANALYSIS</button>
+  </div>
+  <div class="tool-group">
+    <h2>SYSTEM</h2>
+    <button class="tool-btn alert">EMERGENCY LOCK</button>
+  </div>
+</aside>
+
+<div class="main">
+<header>
+  <div>SYSTEM ID : BPS-CORE-α</div>
+  <div>BUILD 0.41 / CHECKSUM 9F2A</div>
+</header>
+
+<main>
+<div class="panel">
+<h2>CASE_014 / OBSERVATION MODULE</h2>
+
+<div class="viewer">
+  <h3>調査中のARG</h3>
+  <div class="arg-list" id="investigation"></div>
+
+  <h3>本日の記録</h3>
+  <div id="today">※リアルタイムARG未開催の場合は空欄</div>
+
+  <h3>今開催中のリアルタイムARG</h3>
+  <div class="arg-list" id="realtime">※リアルタイムARG未開催の場合は空欄</div>
+
+  <h3>販売中のARG</h3>
+  <div class="arg-list" id="onsale"></div>
+
+  <h3>記録カレンダー</h3>
+  <div class="calendar" id="calendar"></div>
+  <div id="detail">※日付を選択してください</div>
+</div>
+</div>
+</main>
+</div>
+</div>
+
+<script>
+/* ===== ARG 管理 ===== */
+const ARG_STORE = [
+  {
+    title: "集合写真素材ARG",
+    thumbnail: "./dummy.png",
+    guideURL: "https://www.gensoureikai.com/dds/group-photo/ARG1/guide",
+    token: "group-photo-ARG1",
+    realtime: false
+  }
+];
+
+// localStorageから購入済みARGトークン取得
+const purchasedTokens = JSON.parse(localStorage.getItem("bps_purchased_args") || "[]");
+
+// 調査中のARG表示
+const investigationEl = document.getElementById("investigation");
+let hasInvestigation = false;
+
+purchasedTokens.forEach(tok => {
+  const arg = ARG_STORE.find(a => a.token === tok);
+  if (!arg) return;
+  hasInvestigation = true;
+
+  const card = document.createElement("div");
+  card.className = "arg-card";
+  card.innerHTML = `
+    <img src="${arg.thumbnail}">
+    <div class="arg-status">調査中</div>
+    <div class="arg-title">${arg.title}</div>
+    <div class="arg-link"><button onclick="window.open('${arg.guideURL}')">OPEN</button></div>
+  `;
+  investigationEl.appendChild(card);
+});
+
+// 調査中ARGがない場合の表示
+if(!hasInvestigation){
+  investigationEl.textContent = "調査中の事象はありません";
+}
+
+/* ===== 販売中ARG表示 ===== */
+const onsaleEl = document.getElementById("onsale");
+ARG_STORE.forEach(arg => {
+  const card = document.createElement("div");
+  card.className = "arg-card";
+  card.innerHTML = `
+    <img src="${arg.thumbnail}">
+    <div class="arg-status">販売中</div>
+    <div class="arg-title">${arg.title}</div>
+    <div class="arg-link"><button onclick="window.open('${arg.guideURL}')">手引き</button></div>
+  `;
+  onsaleEl.appendChild(card);
+});
+
+/* ===== カレンダー固定表示 & 日付クリック ===== */
+function getTodayJST(){return new Date().toISOString().slice(0,10);}
+(function(){
+  let selected=null;
+  const now=new Date();
+  const y=now.getFullYear(), m=now.getMonth();
+  const cal=document.getElementById("calendar");
+  const today=getTodayJST();
+
+  ["日","月","火","水","木","金","土"].forEach(w=>{
+    const d=document.createElement("div");
+    d.className="weekday";
+    d.textContent=w;
+    cal.appendChild(d);
+  });
+
+  for(let i=0;i<new Date(y,m,1).getDay();i++){
+    const e=document.createElement("div");
+    e.className="day";
+    e.style.visibility="hidden";
+    cal.appendChild(e);
+  }
+
+  for(let d=1;d<=new Date(y,m+1,0).getDate();d++){
+    const key=`${y}-${String(m+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+    const cell=document.createElement("div");
+    cell.className="day";
+    cell.textContent=d;
+
+    if(key===today) cell.classList.add("today");
+
+    cell.onclick=()=>{
+      if(selected) selected.classList.remove("selected");
+      cell.classList.add("selected");
+      selected=cell;
+
+      const det=document.getElementById("detail");
+
+      // 将来的にリアルタイムARGサーバーから取得
+      fetch(`/api/arg-progress?date=${key}`)
+        .then(r=>r.json())
+        .then(data=>{
+          if(data && Object.keys(data).length>0){
+            det.textContent=`【${key}】\n\n` + JSON.stringify(data,null,2);
+          } else {
+            det.textContent=`【${key}】\n\n記録なし`;
+          }
+          det.classList.remove("future");
+        })
+        .catch(e=>{
+          det.textContent=`【${key}】\n\n取得エラー`;
+        });
+    };
+    cal.appendChild(cell);
+  }
+})();
+</script>
+
+</body>
+</html>

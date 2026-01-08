@@ -16,9 +16,7 @@
   --sub:#7a7a7a;
   --alert:#a33;
 }
-
 *{box-sizing:border-box}
-
 body{
   margin:0;
   background:var(--bg);
@@ -27,7 +25,6 @@ body{
   font-size:13px;
   letter-spacing:.08em;
 }
-
 .wrapper{display:flex;min-height:100vh}
 
 /* ===== SIDEBAR ===== */
@@ -37,170 +34,92 @@ body{
   background:#080808;
   padding:16px 14px;
 }
-.sidebar h1{
-  font-size:11px;
-  font-weight:normal;
-  color:var(--sub);
-  margin:0 0 16px;
-}
+.sidebar h1{font-size:11px;font-weight:normal;color:var(--sub);margin:0 0 16px}
 .tool-group{margin-bottom:24px}
-.tool-group h2{
-  font-size:10px;
-  font-weight:normal;
-  color:#666;
-  margin:0 0 8px;
-}
+.tool-group h2{font-size:10px;font-weight:normal;color:#666;margin:0 0 8px}
 .tool-btn{
-  display:block;
-  width:100%;
-  padding:8px 10px;
-  margin-bottom:6px;
-  background:#000;
-  border:1px solid var(--line);
-  color:var(--text);
-  font-size:11px;
-  text-align:left;
-  cursor:pointer;
+  display:block;width:100%;padding:8px 10px;margin-bottom:6px;
+  background:#000;border:1px solid var(--line);color:var(--text);
+  font-size:11px;text-align:left;cursor:pointer;
 }
 .tool-btn:hover{background:#111}
-.tool-btn.alert{
-  border-color:var(--alert);
-  color:#ffb3b3;
-}
+.tool-btn.alert{border-color:var(--alert);color:#ffb3b3}
 
 /* ===== MAIN ===== */
 .main{flex:1}
 header{
   border-bottom:1px solid var(--line);
   padding:10px 24px;
-  display:flex;
-  justify-content:space-between;
-  font-size:11px;
-  color:var(--sub);
+  display:flex;justify-content:space-between;
+  font-size:11px;color:var(--sub);
 }
-main{
-  max-width:1200px;
-  margin:24px auto;
-  padding:0 24px;
-}
+main{max-width:1200px;margin:24px auto;padding:0 24px}
 .panel{
-  position:relative;
-  background:var(--panel);
-  border:1px solid var(--line);
-  padding:18px;
+  position:relative;background:var(--panel);
+  border:1px solid var(--line);padding:18px;
 }
 .panel::before,.panel::after{
-  content:"";
-  position:absolute;
-  width:10px;height:10px;
+  content:"";position:absolute;width:10px;height:10px;
 }
-.panel::before{
-  top:-1px;left:-1px;
-  border-top:1px solid var(--text);
-  border-left:1px solid var(--text);
-}
-.panel::after{
-  bottom:-1px;right:-1px;
-  border-bottom:1px solid var(--text);
-  border-right:1px solid var(--text);
-}
-h2{
-  font-size:11px;
-  font-weight:normal;
-  color:var(--sub);
-  margin:0 0 12px;
-}
+.panel::before{top:-1px;left:-1px;border-top:1px solid var(--text);border-left:1px solid var(--text)}
+.panel::after{bottom:-1px;right:-1px;border-bottom:1px solid var(--text);border-right:1px solid var(--text)}
+h2{font-size:11px;font-weight:normal;color:var(--sub);margin:0 0 12px}
 
 /* ===== VIEWER ===== */
 .viewer{
   font-family:'Noto Serif JP',serif;
-  letter-spacing:.25em;
-  color:#e0e0e0;
+  letter-spacing:.25em;color:#e0e0e0;
 }
-.viewer h3{
-  font-weight:normal;
-  margin-top:30px;
-}
+.viewer h3{font-weight:normal;margin-top:30px}
 .viewer h3::before{
   content:"┏━━━━━━━━━━━━━━━━━━━━━━┓";
-  display:block;
-  color:#555;
-  margin-bottom:6px;
+  display:block;color:#555;margin-bottom:6px
 }
 .viewer h3::after{
   content:"┗━━━━━━━━━━━━━━━━━━━━━━┛";
-  display:block;
-  color:#555;
-  margin-top:6px;
+  display:block;color:#555;margin-top:6px
 }
 
 .arg-list{display:flex;gap:20px;flex-wrap:wrap}
 .arg-card{
-  background:#050505;
-  border:1px solid #555;
-  width:180px;
-  padding:10px;
-  text-align:center;
-  position:relative;
+  background:#050505;border:1px solid #555;width:180px;
+  padding:10px;text-align:center;position:relative;
 }
 .arg-card img{width:100%;margin-bottom:6px}
 .arg-status{
-  position:absolute;
-  top:6px;right:6px;
-  background:#6fa8ff;
-  color:#000;
-  font-size:.7em;
-  padding:2px 4px;
+  position:absolute;top:6px;right:6px;
+  background:#6fa8ff;color:#000;font-size:.7em;padding:2px 4px;
 }
 .arg-title{font-weight:bold;margin-bottom:6px}
 .arg-link button{
-  background:#000;
-  color:#ccc;
-  border:1px solid #444;
-  padding:4px 8px;
-  cursor:pointer;
+  background:#000;color:#ccc;border:1px solid #444;
+  padding:4px 8px;cursor:pointer;
 }
 .arg-link button:hover{background:#111}
 
 /* ===== CALENDAR ===== */
 .calendar{
-  display:grid;
-  grid-template-columns:repeat(7,1fr);
-  gap:2px;
-  border:1px solid #333;
-  padding:4px;
-  background:#020202;
+  display:grid;grid-template-columns:repeat(7,1fr);
+  gap:2px;border:1px solid #333;padding:4px;background:#020202;
 }
 .weekday{text-align:center;font-size:.8em;color:#666}
 .day{
-  border:1px solid #222;
-  padding:8px;
-  min-height:50px;
-  position:relative;
-  cursor:pointer;
+  border:1px solid #222;padding:8px;min-height:50px;
+  position:relative;cursor:pointer;
 }
 .day.has::after{
-  content:"■";
-  position:absolute;
-  bottom:4px;
-  right:6px;
-  font-size:10px;
-  color:#888;
+  content:"■";position:absolute;bottom:4px;right:6px;
+  font-size:10px;color:#888;
 }
 .day.future{color:#444}
 .day.today{outline:1px solid #fff}
 .day.selected{outline:2px solid #6fa8ff}
 
 #detail{
-  margin-top:20px;
-  border:1px solid #444;
-  padding:15px;
-  background:#050505;
-  white-space:pre-wrap;
+  margin-top:20px;border:1px solid #444;padding:15px;
+  background:#050505;white-space:pre-wrap;
 }
-#detail.future{
-  animation: blinkMask 1s infinite;
-}
+#detail.future{animation: blinkMask 1s infinite}
 @keyframes blinkMask{
   0%,50%,100%{color:#444;transform:translateX(0)}
   25%{color:#888;transform:translateX(1px)}
@@ -208,11 +127,6 @@ h2{
 }
 </style>
 </head>
-
-<body>
-  <div id="app"></div>
-  <script src="/dds/script.js"></script>
-</body>
 
 <body>
 <div class="wrapper">
@@ -271,7 +185,7 @@ h2{
 </div>
 
 <script>
-/* ===== ARG 管理 ===== */
+/* ===== ARG 管理（構文修正済み） ===== */
 const ARG_STORE = [
   {
     title: "****年の集合写真素材",
@@ -279,7 +193,7 @@ const ARG_STORE = [
     guideURL: "https://www.gensoureikai.com/products/group-photo/",
     token: "group-photo-ARG1",
     realtime: false
-  }
+  },
   {
     title: "異新世界へ",
     thumbnail: "./dummy.png",
@@ -289,10 +203,9 @@ const ARG_STORE = [
   }
 ];
 
-// localStorageから購入済みARGトークン取得
 const purchasedTokens = JSON.parse(localStorage.getItem("bps_purchased_args") || "[]");
 
-// 調査中のARG表示
+/* ===== 調査中ARG ===== */
 const investigationEl = document.getElementById("investigation");
 let hasInvestigation = false;
 
@@ -307,17 +220,18 @@ purchasedTokens.forEach(tok => {
     <img src="${arg.thumbnail}">
     <div class="arg-status">調査中</div>
     <div class="arg-title">${arg.title}</div>
-    <div class="arg-link"><button onclick="window.open('${arg.guideURL}')">OPEN</button></div>
+    <div class="arg-link">
+      <button onclick="window.open('${arg.guideURL}')">OPEN</button>
+    </div>
   `;
   investigationEl.appendChild(card);
 });
 
-// 調査中ARGがない場合の表示
 if(!hasInvestigation){
   investigationEl.textContent = "調査中の事象はありません";
 }
 
-/* ===== 販売中ARG表示 ===== */
+/* ===== 販売中ARG ===== */
 const onsaleEl = document.getElementById("onsale");
 ARG_STORE.forEach(arg => {
   const card = document.createElement("div");
@@ -326,13 +240,20 @@ ARG_STORE.forEach(arg => {
     <img src="${arg.thumbnail}">
     <div class="arg-status">販売中</div>
     <div class="arg-title">${arg.title}</div>
-    <div class="arg-link"><button onclick="window.open('${arg.guideURL}')">手引き</button></div>
+    <div class="arg-link">
+      <button onclick="window.open('${arg.guideURL}')">手引き</button>
+    </div>
   `;
   onsaleEl.appendChild(card);
 });
 
-/* ===== カレンダー固定表示 & 日付クリック ===== */
-function getTodayJST(){return new Date().toISOString().slice(0,10);}
+/* ===== カレンダー ===== */
+function getTodayJST(){
+  const d = new Date();
+  const jst = new Date(d.getTime() + 9*60*60*1000);
+  return jst.toISOString().slice(0,10);
+}
+
 (function(){
   let selected=null;
   const now=new Date();
@@ -368,22 +289,10 @@ function getTodayJST(){return new Date().toISOString().slice(0,10);}
       selected=cell;
 
       const det=document.getElementById("detail");
-
-      // 将来的にリアルタイムARGサーバーから取得
-      fetch(`/api/arg-progress?date=${key}`)
-        .then(r=>r.json())
-        .then(data=>{
-          if(data && Object.keys(data).length>0){
-            det.textContent=`【${key}】\n\n` + JSON.stringify(data,null,2);
-          } else {
-            det.textContent=`【${key}】\n\n記録なし`;
-          }
-          det.classList.remove("future");
-        })
-        .catch(e=>{
-          det.textContent=`【${key}】\n\n取得エラー`;
-        });
+      det.textContent=`【${key}】\n\n記録なし`;
+      det.classList.remove("future");
     };
+
     cal.appendChild(cell);
   }
 })();

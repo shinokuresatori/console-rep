@@ -81,7 +81,7 @@ app.post("/dds/api/state", (req, res) => {
   res.json({ ok: true });
 });
 
-// admin ロック画面を返す（静的配信より前に書く）
+// このあたりに入れる（API定義の下が良い）
 app.get("/dds/admin-lock.html", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "dds", "admin-lock.html"));
 });

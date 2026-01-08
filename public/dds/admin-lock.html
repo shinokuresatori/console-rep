@@ -15,12 +15,15 @@ body{
   height:100vh;
   margin:0;
 }
+.container{
+  width:260px;
+}
 input,button{
+  width:100%;
   background:#000;
   border:1px solid #444;
   color:#ccc;
   padding:6px;
-  width:100%;
   box-sizing:border-box;
 }
 button{
@@ -28,11 +31,8 @@ button{
 }
 #msg{
   margin-top:6px;
-  color:#888;
   min-height:1em;
-}
-.container{
-  width:260px;
+  color:#888;
 }
 </style>
 </head>
@@ -50,51 +50,45 @@ button{
   >
 
   <button type="button" onclick="login()">ENTER</button>
-
   <div id="msg"></div>
 </div>
 
 <script>
-/* ===== すでに管理者ならスキップ ===== */
-if(localStorage.getItem("bps_admin") === "1"){
-  location.href = "/dds/admin-panel.html";
+/* すでに管理者ならスキップ */
+if(localStorage.getItem("bps_admin")==="1"){
+  location.href="/dds/admin-panel.html";
 }
 
-/* ===== LOGIN ===== */
+/* LOGIN */
 function login(){
-  const keyInput = document.getElementById("key");
+  const key = document.getElementById("key").value.trim();
   const msg = document.getElementById("msg");
-  const key = keyInput.value.trim();
-
   msg.textContent = "";
 
   if(!key){
-    msg.textContent = "KEY REQUIRED";
+    msg.textContent="KEY REQUIRED";
     return;
   }
 
   fetch("/dds/api/admin-login",{
     method:"POST",
-    headers:{
-      "Content-Type":"application/json"
-    },
+    headers:{ "Content-Type":"application/json" },
     body:JSON.stringify({ key })
   })
   .then(r=>{
-    if(!r.ok) throw new Error("HTTP ERROR");
+    if(!r.ok) throw new Error();
     return r.json();
   })
   .then(d=>{
     if(d.ok){
       localStorage.setItem("bps_admin","1");
-      location.href = "/dds/admin-panel.html";
+      location.href="/dds/admin-panel.html";
     }else{
-      msg.textContent = "ACCESS DENIED";
-      keyInput.select();
+      msg.textContent="ACCESS DENIED";
     }
   })
   .catch(()=>{
-    msg.textContent = "SERVER ERROR";
+    msg.textContent="SERVER ERROR";
   });
 }
 </script>

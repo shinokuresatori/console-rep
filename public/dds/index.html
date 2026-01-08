@@ -247,20 +247,33 @@ ARG_STORE.forEach(arg => {
   onsaleEl.appendChild(card);
 });
 
-/* ===== カレンダー ===== */
+/* ===== カレンダー（■対応） ===== */
 function getTodayJST(){
   const d = new Date();
   const jst = new Date(d.getTime() + 9*60*60*1000);
   return jst.toISOString().slice(0,10);
 }
 
-(function(){
-  let selected=null;
-  const now=new Date();
-  const y=now.getFullYear(), m=now.getMonth();
-  const cal=document.getElementById("calendar");
-  const today=getTodayJST();
+(async function(){
+  let selected = null;
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = now.getMonth();
+  const cal = document.getElementById("calendar");
+  const today = getTodayJST();
 
+  // 🔽 記録データ取得
+  let recordData = {};
+  try {
+    const res = await fetch("/dds/api/data");
+    recordData = await res.json();
+  } catch(e){
+    console.warn("記録データ取得失敗");
+  }
+
+  const recordDates = Object.keys(recordData);
+
+  // 曜日
   ["日","月","火","水","木","金","土"].forEach(w=>{
     const d=document.createElement("div");
     d.className="weekday";
@@ -268,6 +281,7 @@ function getTodayJST(){
     cal.appendChild(d);
   });
 
+  // 月初の空白
   for(let i=0;i<new Date(y,m,1).getDay();i++){
     const e=document.createElement("div");
     e.className="day";
@@ -275,21 +289,33 @@ function getTodayJST(){
     cal.appendChild(e);
   }
 
+  // 日付生成
   for(let d=1;d<=new Date(y,m+1,0).getDate();d++){
-    const key=`${y}-${String(m+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
-    const cell=document.createElement("div");
-    cell.className="day";
-    cell.textContent=d;
+    const key =
+      `${y}-${String(m+1).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
 
-    if(key===today) cell.classList.add("today");
+    const cell = document.createElement("div");
+    cell.className = "day";
+    cell.textContent = d;
 
-    cell.onclick=()=>{
+    if(key === today) cell.classList.add("today");
+
+    // ★ 記録がある日 → ■
+    if(recordDates.includes(key)){
+      cell.classList.add("has");
+    }
+
+    cell.onclick = () => {
       if(selected) selected.classList.remove("selected");
       cell.classList.add("selected");
-      selected=cell;
+      selected = cell;
 
-      const det=document.getElementById("detail");
-      det.textContent=`【${key}】\n\n記録なし`;
+      const det = document.getElementById("detail");
+      if(recordData[key]){
+        det.textContent = `【${key}】\n\n${recordData[key]}`;
+      } else {
+        det.textContent = `【${key}】\n\n記録なし`;
+      }
       det.classList.remove("future");
     };
 

@@ -4,19 +4,19 @@
   const routes = [
     {
       match: /^\/dds\/?$/,
-      file: "/dds/pages/home.html"
+      file: "/dds/index.html"
     },
     {
       match: /^\/dds\/admin$/,
-      file: "/dds/pages/admin-panel.html"
+      file: "/dds/admin-panel.html"
     },
     {
       match: /^\/dds\/admin-lock$/,
-      file: "/dds/pages/admin-lock.html"
+      file: "/dds/admin-lock.html"
     },
     {
-      match: /^\/dds\/guide$/,
-      file: "/dds/pages/guide.html"
+      match: /^\/dds\/bVgr6sSX8uJpcMJ$/,
+      file: "/dds/bVgr6sSX8uJpcMJ.html"
     }
   ];
 

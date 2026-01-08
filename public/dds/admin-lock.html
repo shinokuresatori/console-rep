@@ -33,16 +33,18 @@ input,button{
 
 <script>
 function login(){
-  fetch("/api/admin-login",{
+  fetch("/dds/api/admin-lock.html",{
     method:"POST",
     headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({key:document.getElementById("key").value})
+    body:JSON.stringify({
+      key:document.getElementById("key").value
+    })
   })
   .then(r=>r.json())
   .then(d=>{
     if(d.ok){
       localStorage.setItem("bps_admin","1");
-      location.href="/admin-panel.html";
+      location.href="/dds/admin-panel.html";
     }else{
       document.getElementById("msg").textContent="ACCESS DENIED";
     }

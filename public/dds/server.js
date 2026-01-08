@@ -81,6 +81,15 @@ app.post("/dds/api/state", (req, res) => {
   res.json({ ok: true });
 });
 
+// admin ロック画面を返す（静的配信より前に書く）
+app.get("/dds/admin-lock.html", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "dds", "admin-lock.html"));
+});
+
+app.get("/dds/admin-panel.html", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "dds", "admin-panel.html"));
+});
+
 /* ===== 直打ち対策（DDS配下） ===== */
 app.get("/dds/*", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "dds", "index.html"));

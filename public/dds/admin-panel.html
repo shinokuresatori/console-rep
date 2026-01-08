@@ -45,13 +45,21 @@ fetch("/dds/api/data")
   .then(j => ddsData = j);
 
 function save(){
-  const date = document.getElementById("date").value;
-  const detail = document.getElementById("detail").value;
-
-  if(!date){
-    document.getElementById("msg").textContent="DATE REQUIRED";
-    return;
-  }
+  fetch("/dds/api/save",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({
+      key: document.getElementById("key").value,
+      date: document.getElementById("date").value,
+      detail: document.getElementById("detail").value
+    })
+  })
+  .then(r => r.json())
+  .then(d => {
+    document.getElementById("msg").textContent =
+      d.ok ? "SAVED" : "ERROR";
+  });
+}
 
   // ■ を必ず付ける
   ddsData[date] = "■ " + detail;

@@ -322,6 +322,20 @@ function getTodayJST(){
     cal.appendChild(cell);
   }
 })();
+  
+fetch("/dds/api/data")
+  .then(r => r.json())
+  .then(data => {
+    const cal = document.getElementById("calendar");
+    Object.keys(data).forEach(date => {
+      const div = document.createElement("div");
+      div.textContent = date + " " + data[date];
+      cal.appendChild(div);
+    });
+  });
+
+// ★ admin保存後も自動更新（5秒）
+setInterval(() => location.reload(), 5000);
 </script>
 
 </body>

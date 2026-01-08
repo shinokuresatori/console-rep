@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <title>BPS ADMIN PANEL</title>
+
 <style>
 body{
   background:#000;
@@ -35,71 +36,49 @@ button{
 <input id="date" placeholder="YYYY-MM-DD">
 <textarea id="detail" rows="6" placeholder="調査ログ"></textarea>
 <input id="key" placeholder="ADMIN KEY">
-<button type="button" onclick="save()">SAVE</button>
+<button onclick="save()">SAVE</button>
 
 <div id="msg"></div>
 
 <script>
-/* ===== 🔐 ロックチェック ===== */
-if(localStorage.getItem("bps_admin") !== "1"){
-  document.body.innerHTML = "FORBIDDEN";
+/* 🔐 ロック */
+if(localStorage.getItem("bps_admin")!=="1"){
+  document.body.innerHTML="FORBIDDEN";
   throw new Error("FORBIDDEN");
 }
 
-/* ===== ENTERで保存 ===== */
-document.addEventListener("keydown",e=>{
-  if(e.key === "Enter" && (e.ctrlKey || e.metaKey)){
-    save();
-  }
-});
-
-/* ===== 保存処理 ===== */
+/* 保存 */
 function save(){
-  const dateEl   = document.getElementById("date");
-  const detailEl = document.getElementById("detail");
-  const keyEl    = document.getElementById("key");
-  const msg      = document.getElementById("msg");
+  const date   = document.getElementById("date").value.trim();
+  const detail = document.getElementById("detail").value.trim();
+  const key    = document.getElementById("key").value.trim();
+  const msg    = document.getElementById("msg");
 
-  const date   = dateEl.value.trim();
-  const detail = detailEl.value.trim();
-  const key    = keyEl.value.trim();
-
-  msg.textContent = "";
+  msg.textContent="";
 
   if(!date || !detail || !key){
-    msg.textContent = "ALL FIELDS REQUIRED";
+    msg.textContent="ALL FIELDS REQUIRED";
     return;
   }
 
   fetch("/dds/api/save",{
     method:"POST",
-    headers:{
-      "Content-Type":"application/json"
-    },
+    headers:{ "Content-Type":"application/json" },
     body:JSON.stringify({
-      key,
       date,
-      detail: detail   // ← ■ や ▓ は server 側で付与
+      detail: "■ " + detail,   ▓ ← 伏せ字
+      key
     })
   })
   .then(r=>{
-    if(!r.ok) throw new Error("HTTP ERROR");
+    if(!r.ok) throw new Error();
     return r.json();
   })
   .then(d=>{
-    if(d.ok){
-      msg.textContent = "SAVED";
-
-      /* ===== DDSへ即反映通知 ===== */
-      localStorage.setItem("dds_refresh", Date.now());
-
-      detailEl.value = "";
-    }else{
-      msg.textContent = "ERROR";
-    }
+    msg.textContent = d.ok ? "SAVED" : "ERROR";
   })
   .catch(()=>{
-    msg.textContent = "SERVER ERROR";
+    msg.textContent="SERVER ERROR";
   });
 }
 </script>

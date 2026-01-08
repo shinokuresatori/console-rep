@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>調査の手引き</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP&display=swap" rel="stylesheet">
+
+<style>
+body{
+  background:#000;
+  color:#e0e0e0;
+  font-family:'Noto Serif JP',serif;
+  letter-spacing:.2em;
+  padding:48px;
+}
+h1{
+  font-weight:normal;
+  margin-bottom:36px;
+}
+.section{
+  margin-bottom:48px;
+  line-height:2;
+}
+button{
+  background:#000;
+  color:#ccc;
+  border:1px solid #555;
+  padding:12px 24px;
+  font-family:inherit;
+  letter-spacing:.2em;
+  cursor:pointer;
+}
+button:hover{background:#111}
+.note{
+  margin-top:24px;
+  font-size:12px;
+  color:#777;
+}
+</style>
+</head>
+
+<body>
+
+<h1>"****年の集合写真素材"調査の手引き</h1>
+
+<div class="section">
+  初めまして、ARGクリエイターの"詩乃暮佐鳥(しのくれさとり)"と申します。<br>
+  この度は私の作品を手に取って頂きありがとうございます。<br>
+  表面上は"Team:還遭霊(ちーむげんそうれい)"と呼称していますが、実際には一人で活動しています。<br>
+  もしよろしければ、こちらのクラウドファンディングの支援をしてくださるとありがたいです。今後の活動の励みとなります。<br>
+  https://camp-fire.jp/projects/916563/ <br>
+  それはさておき、本題に入りましょう。<br>
+  <br>
+  この作品は、行方不明となった男性の"残留した思念"によってあなたの手に届きました。<br>
+  果てしなく続く境界を飛び越え、還遭員であるあなたの元に到着しました。<br>
+  あなたは、一人の男性、"玉置理"の死の真相を解き明かしてください。<br>
+  <br>
+  主に、【DIC-mail・Gensou Blog・サーバー分散型SNS"Diction"のサーバー"日本民間風習研究の会　関係者の集まり"】で展開されます。<br>
+  <br>
+  参考：第四境界 様
+</div>
+
+<div class="section">
+  この調査は、単独で完結することを想定していません。<br>
+  記録・観測・照合を行う外部機構との接続が推奨されます。
+</div>
+
+<div class="section">
+  <button onclick="connectDDS()">DDSへ接続</button>
+  <div class="note">
+    ※ 接続は任意です<br>
+    ※ 接続情報は記録されます
+  </div>
+</div>
+
+<script>
+function connectBPS(){
+  /* ARG固有トークン（商品ごとに固定） */
+  const ARG_TOKEN = "bVgr6sSX8uJpcMJ";
+
+  /* BPS 側にトークンを渡す（gensoureikai.onrender.com） */
+  const baseURL = "https://gensoureikai.onrender.com/dds/bVgr6sSX8uJpcMJ";
+  const url = `${baseURL}?connect=${ARG_TOKEN}`;
+  
+  window.location.href = url;
+}
+</script>
+
+</body>
+</html>

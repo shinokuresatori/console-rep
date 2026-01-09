@@ -4,41 +4,44 @@
 <meta charset="utf-8">
 <title>BPS ADMIN PANEL</title>
 <style>
-body{background:#000;color:#ccc;font-family:Consolas,monospace;padding:20px;}
-input,textarea,button{width:100%;margin-bottom:8px;background:#000;color:#ccc;border:1px solid #444;padding:6px;}
-button{cursor:pointer;}
-#msg{margin-top:6px;}
+body{
+  background:#000;color:#ccc;font-family:Consolas,monospace;
+  padding:20px;
+}
+input,textarea,button{
+  width:100%;margin-bottom:8px;
+  background:#000;color:#ccc;
+  border:1px solid #444;padding:6px;
+}
 </style>
 </head>
+
 <body>
 <h3>ADMIN PANEL</h3>
+
 <input id="date" placeholder="YYYY-MM-DD">
-<textarea id="detail" rows="6" placeholder="調査ログ"></textarea>
-<input id="key" placeholder="ADMIN KEY">
-<button type="button" onclick="save()">SAVE</button>
+<textarea id="detail" rows="6" placeholder="LOG"></textarea>
+<button onclick="save()">SAVE</button>
 <div id="msg"></div>
 
 <script>
 if(localStorage.getItem("bps_admin")!=="1"){
-  location.href="/dds/admin-lock.html";
+  document.body.textContent="FORBIDDEN";
 }
 
 function save(){
-  const date=document.getElementById("date").value.trim();
-  const detail=document.getElementById("detail").value.trim();
-  const key=document.getElementById("key").value.trim();
-  const msg=document.getElementById("msg");
-
-  if(!date || !detail || !key){ msg.textContent="ALL FIELDS REQUIRED"; return; }
-
-  fetch("/dds/api/save", {
+  fetch("/dds/api/save",{
     method:"POST",
     headers:{ "Content-Type":"application/json" },
-    body: JSON.stringify({ date, detail:"■ "+detail, key })
+    body:JSON.stringify({
+      date:date.value,
+      detail:"■"+detail.value
+    })
   })
-  .then(res=>res.json())
-  .then(data=>{ msg.textContent=data.ok?"SAVED":"ERROR"; })
-  .catch(()=>msg.textContent="SERVER ERROR");
+  .then(r=>r.json())
+  .then(d=>{
+    msg.textContent=d.ok?"SAVED":"ERROR";
+  });
 }
 </script>
 </body>

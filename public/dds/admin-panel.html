@@ -2,72 +2,57 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8">
-<title>ADMIN LOCK</title>
+<title>ADMIN PANEL</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
-body{
-  background:#000;
-  color:#ccc;
-  font-family:Consolas,monospace;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  height:100vh;
+body {
+  background: #000;
+  color: #0f0;
+  font-family: monospace;
+  padding: 20px;
 }
-input,button{
-  width:100%;
-  background:#000;
-  color:#ccc;
-  border:1px solid #444;
-  padding:6px;
+
+#status {
+  margin-bottom: 20px;
 }
-#msg{ margin-top:6px; }
+
+button {
+  background: #000;
+  color: #0f0;
+  border: 1px solid #0f0;
+  padding: 8px;
+  cursor: pointer;
+}
 </style>
 </head>
 
 <body>
 
-<div style="width:260px">
-  <h3>ADMIN ACCESS</h3>
+<div id="status"></div>
 
-  <input id="pw" placeholder="PASSWORD">
-
-  <button type="button" onclick="login()">ENTER</button>
-
-  <div id="msg"></div>
+<div id="panel" style="display:none;">
+  <p>ADMIN PANEL ACTIVE</p>
+  <button id="logout">LOGOUT</button>
 </div>
 
 <script>
-document.getElementById("pw").addEventListener("keydown", e=>{
-  if(e.key === "Enter") login();
-});
+const status = document.getElementById("status");
+const panel = document.getElementById("panel");
 
-function login(){
-  const pw = document.getElementById("pw").value.trim();
-  const msg = document.getElementById("msg");
+const signal = localStorage.getItem("dds_admin_signal");
 
-  console.log("login attempt:", pw);
-
-  fetch("/dds/api/admin-login",{
-    method:"POST",
-    headers:{ "Content-Type":"application/json" },
-    body:JSON.stringify({ password: pw })
-  })
-  .then(r=>r.json())
-  .then(d=>{
-    console.log("login result:", d);
-    if(d.ok){
-      localStorage.setItem("admin_signal","granted");
-      location.href = "/dds/admin-panel.html";
-    }else{
-      msg.textContent = "ACCESS DENIED";
-    }
-  })
-  .catch(err=>{
-    console.error(err);
-    msg.textContent = "SERVER ERROR";
-  });
+if (signal === "accepted") {
+  status.textContent = "SIGNAL ACCEPTED.";
+  panel.style.display = "block";
+} else {
+  status.textContent = "SIGNAL FORBIDDEN.";
 }
+
+document.getElementById("logout").onclick = () => {
+  localStorage.removeItem("dds_admin_signal");
+  location.href = "/dds/admin-lock.html";
+};
 </script>
 
 </body>

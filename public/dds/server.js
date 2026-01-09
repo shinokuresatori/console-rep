@@ -2,6 +2,8 @@ const express = require("express");
 const path = require("path");
 const fs = require("fs");
 
+console.log("ENV CHECK ADMIN_KEY =", process.env.ADMIN_KEY);
+
 const app = express();
 const PORT = process.env.PORT || 10000;
 const ADMIN_KEY = process.env.ADMIN_KEY;

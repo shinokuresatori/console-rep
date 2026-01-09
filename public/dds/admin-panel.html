@@ -3,56 +3,28 @@
 <head>
 <meta charset="utf-8">
 <title>ADMIN PANEL</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
 <style>
-body {
-  background: #000;
-  color: #0f0;
-  font-family: monospace;
-  padding: 20px;
-}
-
-#status {
-  margin-bottom: 20px;
-}
-
-button {
-  background: #000;
-  color: #0f0;
-  border: 1px solid #0f0;
-  padding: 8px;
-  cursor: pointer;
+body{
+  background:#000;
+  color:#0f0;
+  font-family:Consolas, monospace;
+  padding:20px;
 }
 </style>
 </head>
-
 <body>
 
 <div id="status"></div>
 
-<div id="panel" style="display:none;">
-  <p>ADMIN PANEL ACTIVE</p>
-  <button id="logout">LOGOUT</button>
-</div>
-
 <script>
 const status = document.getElementById("status");
-const panel = document.getElementById("panel");
-
 const signal = localStorage.getItem("dds_admin_signal");
 
-if (signal === "accepted") {
-  status.textContent = "SIGNAL ACCEPTED.";
-  panel.style.display = "block";
+if (signal !== "accepted") {
+  status.textContent = "signal forbidden.";
 } else {
-  status.textContent = "SIGNAL FORBIDDEN.";
+  status.textContent = "signal accepted.";
 }
-
-document.getElementById("logout").onclick = () => {
-  localStorage.removeItem("dds_admin_signal");
-  location.href = "/dds/admin-lock.html";
-};
 </script>
 
 </body>

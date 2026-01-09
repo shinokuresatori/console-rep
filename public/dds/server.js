@@ -1,35 +1,65 @@
-const express = require("express");
-const path = require("path");
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>ADMIN LOCK</title>
+<style>
+body{
+  background:#000;
+  color:#ccc;
+  font-family:Consolas,monospace;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+}
+.container{width:260px}
+input,button{
+  width:100%;
+  margin-top:8px;
+  background:#000;
+  border:1px solid #444;
+  color:#ccc;
+  padding:6px;
+}
+#msg{margin-top:8px;color:#888}
+</style>
+</head>
+<body>
 
-const app = express();
-const PORT = process.env.PORT || 10000;
+<div class="container">
+  <h3>ADMIN ACCESS</h3>
+  <input id="password" type="password" placeholder="PASSWORD"
+    onkeydown="if(event.key==='Enter') login()">
+  <button onclick="login()">ENTER</button>
+  <div id="msg"></div>
+</div>
 
-/* ===== 固定パスワード（ここだけ変更すればOK） ===== */
-const ADMIN_PASSWORD = "shinokure_satori_ryouko_shinohara";
+<script>
+function login(){
+  const pw = document.getElementById("password").value;
+  const msg = document.getElementById("msg");
+  msg.textContent = "";
 
-app.use(express.json());
-app.use(express.static("public"));
+  fetch("/dds/api/admin-login",{
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body: JSON.stringify({ password: pw })   // ★ここ重要
+  })
+  .then(r => r.json())
+  .then(d => {
+    if(d.ok){
+      localStorage.setItem("dds_admin_signal","1");
+      location.href = "/dds/admin-panel.html";
+    }else{
+      msg.textContent = "ACCESS DENIED";
+    }
+  })
+  .catch(()=>{
+    msg.textContent = "SERVER ERROR";
+  });
+}
+</script>
 
-/* ===== admin login API ===== */
-app.post("/dds/api/admin-login", (req, res) => {
-  const { password } = req.body;
-  res.json({ ok: password === ADMIN_PASSWORD });
-});
-
-/* ===== admin pages ===== */
-app.get("/dds/admin-lock.html", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "dds", "admin-lock.html"));
-});
-
-app.get("/dds/admin-panel.html", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "dds", "admin-panel.html"));
-});
-
-/* ===== DDS viewer ===== */
-app.get("/dds/*", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "dds", "index.html"));
-});
-
-app.listen(PORT, () => {
-  console.log("DDS Server running on", PORT);
-});
+</body>
+</html>

@@ -5,62 +5,50 @@
 <title>BPS ADMIN LOCK</title>
 <style>
 body{
-  background:#000;
-  color:#ccc;
-  font-family:Consolas,monospace;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  height:100vh;
-  margin:0;
+  background:#000;color:#ccc;font-family:Consolas,monospace;
+  display:flex;justify-content:center;align-items:center;
+  height:100vh;margin:0;
 }
 input,button{
-  background:#000;
-  border:1px solid #444;
-  color:#ccc;
-  padding:6px;
-  width:100%;
-  box-sizing:border-box;
+  width:100%;background:#000;color:#ccc;
+  border:1px solid #444;padding:6px;
 }
-button{cursor:pointer;}
-#msg{margin-top:6px;color:#888;min-height:1em;}
-.container{width:260px;}
+#msg{margin-top:6px;color:#888;min-height:1em}
+.container{width:260px}
 </style>
 </head>
+
 <body>
 <div class="container">
   <h3>ADMIN ACCESS</h3>
-  <input id="key" placeholder="ADMIN KEY" autocomplete="off" onkeydown="if(event.key==='Enter') login()">
-  <button type="button" onclick="login()">ENTER</button>
+  <input id="key" placeholder="ADMIN KEY">
+  <button onclick="login()">ENTER</button>
   <div id="msg"></div>
 </div>
-<script>
-if(localStorage.getItem("bps_admin")==="1"){
-  location.href="/dds/admin-panel.html";
-}
 
+<script>
 function login(){
   const key = document.getElementById("key").value.trim();
   const msg = document.getElementById("msg");
-  msg.textContent="";
+  msg.textContent = "";
 
-  if(!key){ msg.textContent="KEY REQUIRED"; return; }
-
-  fetch("/dds/api/admin-login", {
+  fetch("/dds/api/admin-login",{
     method:"POST",
     headers:{ "Content-Type":"application/json" },
-    body: JSON.stringify({ key })
+    body:JSON.stringify({ key })
   })
-  .then(res => res.json())
-  .then(data => {
-    if(data.ok){
+  .then(r=>r.json())
+  .then(d=>{
+    if(d.ok){
       localStorage.setItem("bps_admin","1");
       location.href="/dds/admin-panel.html";
-    } else {
+    }else{
       msg.textContent="ACCESS DENIED";
     }
   })
-  .catch(()=> msg.textContent="SERVER ERROR");
+  .catch(()=>{
+    msg.textContent="SERVER ERROR";
+  });
 }
 </script>
 </body>

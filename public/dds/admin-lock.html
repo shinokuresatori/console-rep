@@ -3,72 +3,84 @@
 <head>
 <meta charset="utf-8">
 <title>ADMIN LOCK</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
-body{
-  background:#000;
-  color:#ccc;
-  font-family:Consolas,monospace;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  height:100vh;
+body {
+  background: #000;
+  color: #0f0;
+  font-family: monospace;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
 }
-input,button{
-  width:100%;
-  background:#000;
-  color:#ccc;
-  border:1px solid #444;
-  padding:6px;
+
+#box {
+  border: 1px solid #0f0;
+  padding: 24px;
+  width: 300px;
 }
-#msg{ margin-top:6px; }
+
+input, button {
+  width: 100%;
+  background: #000;
+  color: #0f0;
+  border: 1px solid #0f0;
+  padding: 8px;
+  margin-top: 8px;
+}
+
+button {
+  cursor: pointer;
+}
+
+#msg {
+  margin-top: 10px;
+  height: 1.2em;
+}
 </style>
 </head>
 
 <body>
-
-<div style="width:260px">
-  <h3>ADMIN ACCESS</h3>
-
-  <input id="pw" placeholder="PASSWORD">
-
-  <button type="button" onclick="login()">ENTER</button>
-
+<div id="box">
+  <div>ADMIN PASSWORD</div>
+  <input id="pw" type="password" autocomplete="off">
+  <button id="enter">ENTER</button>
   <div id="msg"></div>
 </div>
 
 <script>
-document.getElementById("pw").addEventListener("keydown", e=>{
-  if(e.key === "Enter") login();
-});
+const pwInput = document.getElementById("pw");
+const msg = document.getElementById("msg");
+const enterBtn = document.getElementById("enter");
 
-function login(){
-  const pw = document.getElementById("pw").value.trim();
-  const msg = document.getElementById("msg");
+enterBtn.onclick = async () => {
+  msg.textContent = "checking...";
 
-  console.log("login attempt:", pw);
+  try {
+    const res = await fetch("/dds/api/admin-login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ password: pwInput.value })
+    });
 
-  fetch("/dds/api/admin-login",{
-    method:"POST",
-    headers:{ "Content-Type":"application/json" },
-    body:JSON.stringify({ password: pw })
-  })
-  .then(r=>r.json())
-  .then(d=>{
-    console.log("login result:", d);
-    if(d.ok){
-      localStorage.setItem("admin_signal","granted");
+    const data = await res.json();
+
+    if (data.ok) {
+      localStorage.setItem("dds_admin_signal", "accepted");
       location.href = "/dds/admin-panel.html";
-    }else{
-      msg.textContent = "ACCESS DENIED";
+    } else {
+      msg.textContent = "invalid password";
     }
-  })
-  .catch(err=>{
-    console.error(err);
-    msg.textContent = "SERVER ERROR";
-  });
-}
-</script>
+  } catch (e) {
+    msg.textContent = "server error";
+  }
+};
 
+pwInput.addEventListener("keydown", e => {
+  if (e.key === "Enter") enterBtn.click();
+});
+</script>
 </body>
 </html>

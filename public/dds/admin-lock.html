@@ -3,82 +3,60 @@
 <head>
 <meta charset="utf-8">
 <title>ADMIN LOCK</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
 <style>
-body {
-  background: #000;
-  color: #0f0;
-  font-family: monospace;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
+body{
+  background:#000;
+  color:#0f0;
+  font-family:Consolas, monospace;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
 }
-
-#box {
-  border: 1px solid #0f0;
-  padding: 24px;
-  width: 300px;
+.box{
+  border:1px solid #0f0;
+  padding:20px;
 }
-
-input, button {
-  width: 100%;
-  background: #000;
-  color: #0f0;
-  border: 1px solid #0f0;
-  padding: 8px;
-  margin-top: 8px;
+input,button{
+  background:#000;
+  border:1px solid #0f0;
+  color:#0f0;
+  padding:6px;
+  width:100%;
+  margin-top:10px;
 }
-
-button {
-  cursor: pointer;
-}
-
-#msg {
-  margin-top: 10px;
-  height: 1.2em;
+#msg{
+  margin-top:10px;
 }
 </style>
 </head>
-
 <body>
-<div id="box">
-  <div>ADMIN PASSWORD</div>
-  <input id="pw" type="password" autocomplete="off">
+
+<div class="box">
+  <div>ADMIN LOCK</div>
+  <input id="pw" type="password" placeholder="PASSWORD">
   <button id="enter">ENTER</button>
-  <div id="msg"></div>
+  <div id="msg">signal forbidden.</div>
 </div>
 
 <script>
-const pwInput = document.getElementById("pw");
+const pw = document.getElementById("pw");
 const msg = document.getElementById("msg");
-const enterBtn = document.getElementById("enter");
+const btn = document.getElementById("enter");
 
-enterBtn.onclick = async () => {
+btn.onclick = async () => {
   msg.textContent = "checking...";
 
   try {
     const res = await fetch("/dds/api/admin-login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ password: pwInput.value })
+      body: JSON.stringify({
+        password: pw.value   // ← ここが最重要
+      })
     });
 
-    if (!res.ok) {
-      msg.textContent = "server error";
-      return;
-    }
-
-    const text = await res.text();
-    let data;
-
-    try {
-      data = JSON.parse(text);
-    } catch {
-      msg.textContent = "invalid server response";
-      return;
-    }
+    const data = await res.json();
 
     if (data.ok) {
       localStorage.setItem("dds_admin_signal", "accepted");
@@ -87,14 +65,15 @@ enterBtn.onclick = async () => {
       msg.textContent = "invalid password";
     }
 
-  } catch (e) {
-    msg.textContent = "network error";
+  } catch {
+    msg.textContent = "server error";
   }
 };
 
-pwInput.addEventListener("keydown", e => {
-  if (e.key === "Enter") enterBtn.click();
+pw.addEventListener("keydown", e => {
+  if (e.key === "Enter") btn.click();
 });
 </script>
+
 </body>
 </html>

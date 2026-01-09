@@ -65,7 +65,20 @@ enterBtn.onclick = async () => {
       body: JSON.stringify({ password: pwInput.value })
     });
 
-    const data = await res.json();
+    if (!res.ok) {
+      msg.textContent = "server error";
+      return;
+    }
+
+    const text = await res.text();
+    let data;
+
+    try {
+      data = JSON.parse(text);
+    } catch {
+      msg.textContent = "invalid server response";
+      return;
+    }
 
     if (data.ok) {
       localStorage.setItem("dds_admin_signal", "accepted");
@@ -73,8 +86,9 @@ enterBtn.onclick = async () => {
     } else {
       msg.textContent = "invalid password";
     }
+
   } catch (e) {
-    msg.textContent = "server error";
+    msg.textContent = "network error";
   }
 };
 

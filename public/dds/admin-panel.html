@@ -2,66 +2,56 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8">
-<title>BPS ADMIN PANEL</title>
+<title>ADMIN LOCK</title>
 <style>
 body{
   background:#000;
   color:#ccc;
   font-family:Consolas,monospace;
-  padding:20px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
 }
-input,textarea,button{
+input,button{
   width:100%;
-  margin-bottom:8px;
   background:#000;
   color:#ccc;
   border:1px solid #444;
   padding:6px;
 }
-button{cursor:pointer}
-#msg{margin-top:6px}
+#msg{ margin-top:6px; }
 </style>
 </head>
 <body>
 
-<h3>ADMIN PANEL</h3>
-
-<input id="date" placeholder="YYYY-MM-DD">
-<textarea id="detail" rows="6" placeholder="調査ログ"></textarea>
-<button onclick="save()">SAVE</button>
-
-<div id="msg"></div>
+<div style="width:260px">
+  <h3>ADMIN ACCESS</h3>
+  <input id="pw" placeholder="PASSWORD"
+    onkeydown="if(event.key==='Enter')login()">
+  <button onclick="login()">ENTER</button>
+  <div id="msg"></div>
+</div>
 
 <script>
-if(!localStorage.getItem("bps_admin")){
-  document.body.innerHTML="FORBIDDEN";
-  throw new Error("FORBIDDEN");
-}
+function login(){
+  const pw = document.getElementById("pw").value.trim();
+  const msg = document.getElementById("msg");
 
-function save(){
-  const date=document.getElementById("date").value.trim();
-  const detail=document.getElementById("detail").value.trim();
-  const msg=document.getElementById("msg");
-
-  if(!date||!detail){
-    msg.textContent="REQUIRED";
-    return;
-  }
-
-  fetch("/dds/api/save",{
+  fetch("/dds/api/admin-login",{
     method:"POST",
     headers:{ "Content-Type":"application/json" },
-    body:JSON.stringify({
-      date,
-      detail
-    })
+    body:JSON.stringify({ password: pw })
   })
   .then(r=>r.json())
   .then(d=>{
-    msg.textContent=d.ok?"SAVED":"ERROR";
-  })
-  .catch(()=>{
-    msg.textContent="SERVER ERROR";
+    if(d.ok){
+      /* ===== SIGNAL を送る ===== */
+      localStorage.setItem("admin_signal","granted");
+      location.href = "/dds/admin-panel.html";
+    }else{
+      msg.textContent = "ACCESS DENIED";
+    }
   });
 }
 </script>

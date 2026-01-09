@@ -2,59 +2,29 @@
 <html lang="ja">
 <head>
 <meta charset="utf-8">
-<title>ADMIN LOCK</title>
+<title>ADMIN PANEL</title>
 <style>
 body{
   background:#000;
   color:#ccc;
   font-family:Consolas,monospace;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  height:100vh;
+  padding:20px;
 }
-input,button{
-  width:100%;
-  background:#000;
-  color:#ccc;
-  border:1px solid #444;
-  padding:6px;
-}
-#msg{ margin-top:6px; }
 </style>
 </head>
 <body>
 
-<div style="width:260px">
-  <h3>ADMIN ACCESS</h3>
-  <input id="pw" placeholder="PASSWORD"
-    onkeydown="if(event.key==='Enter')login()">
-  <button onclick="login()">ENTER</button>
-  <div id="msg"></div>
-</div>
-
 <script>
-function login(){
-  const pw = document.getElementById("pw").value.trim();
-  const msg = document.getElementById("msg");
-
-  fetch("/dds/api/admin-login",{
-    method:"POST",
-    headers:{ "Content-Type":"application/json" },
-    body:JSON.stringify({ password: pw })
-  })
-  .then(r=>r.json())
-  .then(d=>{
-    if(d.ok){
-      /* ===== SIGNAL を送る ===== */
-      localStorage.setItem("admin_signal","granted");
-      location.href = "/dds/admin-panel.html";
-    }else{
-      msg.textContent = "ACCESS DENIED";
-    }
-  });
+/* ===== SIGNAL CHECK ===== */
+if(localStorage.getItem("admin_signal") !== "granted"){
+  document.body.innerHTML =
+    "<h2>SIGNAL FORBIDDEN</h2>";
+  throw new Error("NO SIGNAL");
 }
 </script>
+
+<h3>ADMIN PANEL</h3>
+<p>Signal accepted.</p>
 
 </body>
 </html>

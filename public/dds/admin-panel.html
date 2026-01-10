@@ -1,29 +1,15 @@
 <!doctype html>
-<html lang="ja">
-<head>
-<meta charset="utf-8">
-<title>ADMIN PANEL</title>
-<style>
-body{
-  background:#000;
-  color:#0f0;
-  font-family:Consolas, monospace;
-  padding:20px;
-}
-</style>
-</head>
-<body>
+<html>
+<body style="background:black;color:#0f0;font-family:monospace">
 
-<div id="status"></div>
+<div id="s"></div>
 
 <script>
-const status = document.getElementById("status");
-const signal = localStorage.getItem("dds_admin_signal");
-
-if (signal !== "accepted") {
-  status.textContent = "signal forbidden.";
-} else {
-  status.textContent = "signal accepted.";
+const s = document.getElementById("s");
+if(localStorage.getItem("dds_admin_signal")==="accepted"){
+  s.textContent="signal accepted.";
+}else{
+  s.textContent="signal forbidden.";
 }
 </script>
 

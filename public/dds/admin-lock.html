@@ -1,78 +1,26 @@
 <!doctype html>
-<html lang="ja">
-<head>
-<meta charset="utf-8">
-<title>ADMIN LOCK</title>
-<style>
-body{
-  background:#000;
-  color:#0f0;
-  font-family:Consolas, monospace;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  height:100vh;
-}
-.box{
-  border:1px solid #0f0;
-  padding:20px;
-}
-input,button{
-  background:#000;
-  border:1px solid #0f0;
-  color:#0f0;
-  padding:6px;
-  width:100%;
-  margin-top:10px;
-}
-#msg{
-  margin-top:10px;
-}
-</style>
-</head>
-<body>
+<html>
+<body style="background:black;color:#0f0;font-family:monospace">
 
-<div class="box">
-  <div>ADMIN LOCK</div>
-  <input id="pw" type="password" placeholder="PASSWORD">
-  <button id="enter">ENTER</button>
-  <div id="msg">signal forbidden.</div>
-</div>
+<input id="pw">
+<button onclick="login()">ENTER</button>
+<div id="msg">signal forbidden.</div>
 
 <script>
-const pw = document.getElementById("pw");
-const msg = document.getElementById("msg");
-const btn = document.getElementById("enter");
+async function login(){
+  const pw = document.getElementById("pw").value;
+  const res = await fetch(
+    "/dds/api/admin-login?password=" + encodeURIComponent(pw)
+  );
+  const data = await res.json();
 
-btn.onclick = async () => {
-  msg.textContent = "checking...";
-
-  try {
-    const res = await fetch("/dds/api/admin-login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        password: pw.value   // ← ここが最重要
-      })
-    });
-
-    const data = await res.json();
-
-    if (data.ok) {
-      localStorage.setItem("dds_admin_signal", "accepted");
-      location.href = "/dds/admin-panel.html";
-    } else {
-      msg.textContent = "invalid password";
-    }
-
-  } catch {
-    msg.textContent = "server error";
+  if(data.ok){
+    localStorage.setItem("dds_admin_signal","accepted");
+    location.href="/dds/admin-panel.html";
+  }else{
+    document.getElementById("msg").textContent="invalid";
   }
-};
-
-pw.addEventListener("keydown", e => {
-  if (e.key === "Enter") btn.click();
-});
+}
 </script>
 
 </body>
